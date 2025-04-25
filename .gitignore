@@ -1,0 +1,2 @@
+venv/ # ignore your virtualenv
+__pycache__/ # ignore Python bytecode
