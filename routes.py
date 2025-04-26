@@ -65,7 +65,7 @@ async def create_task(
     return new_task
 
 
-@router.get("/tasks", response_model=List[schemas.TaskOut])
+@router.get("/tasks", response_model=list[schemas.TaskOut])
 async def get_tasks(
     current_user: models.User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),

@@ -1,16 +1,19 @@
+import os
 from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Optional
 from database import get_db
+from jose import jwt, JWTError
 import models
 
-SECRET_KEY = "your-secret-key"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
@@ -46,7 +49,7 @@ async def get_current_user(
         user_id = payload.get("sub")
         if user_id is None:
             raise creds_exc
-    except jwt.PyJWTError:
+    except JWTError:
         raise creds_exc
     result = await db.execute(select(models.User).where(models.User.id == int(user_id)))
     user = result.scalar_one_or_none()
@@ -67,5 +70,5 @@ def create_reset_token(
 def verify_reset_token(token: str) -> dict:
     try:
         return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    except jwt.PyJWTError:
+    except JWTError:
         raise HTTPException(status_code=400, detail="Invalid token")

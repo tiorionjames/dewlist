@@ -8,23 +8,23 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState('');
 
-  // Create form state
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [recurrence, setRecurrence] = useState('');
   const [recurrenceEnd, setRecurrenceEnd] = useState('');
 
-  // Edit state
+
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
 
-  // Pause state
+
   const [pausingTaskId, setPausingTaskId] = useState(null);
   const [pauseReason, setPauseReason] = useState('');
 
-  // Fetch tasks
+
   useEffect(() => {
     async function fetchTasks() {
       try {
@@ -39,7 +39,7 @@ export default function TasksPage() {
     fetchTasks();
   }, [filter]);
 
-  // Create task
+
   async function handleCreate(e) {
     e.preventDefault();
     const payload = {
@@ -65,7 +65,7 @@ export default function TasksPage() {
     }
   }
 
-  // Delete task
+
   async function handleDelete(id) {
     if (!window.confirm('Delete this task?')) return;
     try {
@@ -77,7 +77,7 @@ export default function TasksPage() {
     }
   }
 
-  // Edit task
+
   function startEdit(task) {
     setEditingTaskId(task.id);
     setEditTitle(task.title);
@@ -104,7 +104,7 @@ export default function TasksPage() {
     }
   }
 
-  // Toggle complete
+
   async function handleToggleComplete(id) {
     try {
       const res = await fetch(`http://localhost:8000/tasks/${id}/complete`, { method: 'PATCH' });
@@ -116,8 +116,7 @@ export default function TasksPage() {
     }
   }
 
-  // Start and end times
-  async function handleStart(id) {
+    async function handleStart(id) {
     try {
       const res = await fetch(`http://localhost:8000/tasks/${id}/start`, { method: 'PATCH' });
       const updated = await res.json();
@@ -138,8 +137,7 @@ export default function TasksPage() {
     }
   }
 
-  // Pause and resume
-  function startPause(id) {
+    function startPause(id) {
     setPausingTaskId(id);
     setPauseReason('');
   }

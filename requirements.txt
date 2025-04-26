@@ -8,6 +8,7 @@ anyio==4.9.0
 async-timeout==5.0.1
 asyncpg==0.30.0
 attrs==25.3.0
+base==0.0.0
 bcrypt==4.3.0
 certifi==2025.1.31
 cffi==1.17.1
@@ -60,6 +61,7 @@ passlib==1.7.4
 pillow==11.2.1
 propcache==0.3.1
 psutil==7.0.0
+psycopg==3.2.6
 psycopg2-binary==2.9.10
 pyarrow==19.0.1
 pyasn1==0.4.8
