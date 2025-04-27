@@ -6,6 +6,7 @@ This is an app that is a Work In Progress. It's main function is a "Do List", a 
 
 Some features currently include:
 
+- A login system with username and password
 - Adding a task
 - Adding a recurrance
 - Adding a due date
@@ -13,20 +14,22 @@ Some features currently include:
 - A Pause button with timestamp and reason for pause
 - A Resume button with timestamp
 - An End Button with timestamp
+- An edit button to edit the task
 
 Future features may include:
 
-- An edit button to edit the task (Reserved for admins)
-- A delete button to delete the task (Reserved for admins or managers)
-- A login system with username and password
+- Shared Tasks and collaboration _WIP_
+- An edit button to edit the task (Reserved for admins) _WIP_
+- A delete button to delete the task (Reserved for admins or managers) _WIP_
+
 - A reminder feature with alarm
 - intigration into Google Calendar (optional)
 - A notification system used to push updates or request updates on tasks
-  -- Tags or Categories grouping (work, personal, errands, etc.) -_- Priority Levels (low/high, numeric, color coding, customization)
-  -- integration to iCal, in addition to Google Calendar(optional)
-  -- Shared Tasks and collaboration
-  -- activity logs -_- Natural-language entry("Smith report due tomorrow at 6pm" -> auto-parses into title + due date/time)
-  -- analytics dashboard (charts showing tasks completed per week, day, month, etc with filters for avg completion time, overdue trends)
+- Tags or Categories grouping (work, personal, errands, etc.) -\_- Priority Levels (low/high, numeric, color coding, customization)
+- integration to iCal, in addition to Google Calendar(optional)
+-
+- activity logs -\_- Natural-language entry("Smith report due tomorrow at 6pm" -> auto-parses into title + due date/time)
+- analytics dashboard (charts showing tasks completed per week, day, month, etc with filters for avg completion time, overdue trends)
   -\*- Mobile-Friendly UI
 
 ## Getting started
@@ -66,6 +69,8 @@ npm run dev
 
 [Complete]
 {In Progress}
+
+**_Admin Dashboard button shows up but pressing it attempts to go to the dashboard but gets redirected to localhost:3000_**
 
 ## Add your files
 
