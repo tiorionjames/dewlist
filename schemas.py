@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 from datetime import datetime
 from typing import Optional, List
 
@@ -43,10 +43,9 @@ class TaskOut(TaskBase):
     paused_at: Optional[datetime]
     pause_reason: Optional[str]
     resumed_at: Optional[datetime]
-    recurrence_label: Optional[str]
+    recurrence_label: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Message(BaseModel):

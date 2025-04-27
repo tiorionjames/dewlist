@@ -4,6 +4,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from datetime import datetime, timedelta
 from typing import Optional
+from utils import strip_timezone
+from utils import sanitize_datetime_fields
+from pydantic import BaseModel
+from models import User
 
 import models, schemas
 from database import get_db
@@ -58,11 +62,24 @@ async def create_task(
     current_user: models.User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    new_task = models.Task(**task.dict(), user_id=current_user.id)
+    sanitized_task_data = sanitize_datetime_fields(task.dict())
+    new_task = models.Task(**sanitized_task_data, user_id=current_user.id)
     db.add(new_task)
     await db.commit()
     await db.refresh(new_task)
-    return new_task
+
+    task_out = schemas.TaskOut.from_orm(new_task)
+
+    def build_label(task):
+        if task.recurrence and task.recurrence_end:
+            return f"Repeats {task.recurrence} until {task.recurrence_end.date()}"
+        elif task.recurrence:
+            return f"Repeats {task.recurrence}"
+        return None
+
+    task_out.recurrence_label = build_label(new_task)
+
+    return task_out
 
 
 @router.get("/tasks", response_model=list[schemas.TaskOut])
@@ -191,4 +208,68 @@ async def start_task(
     current_user: models.User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(select(models.Task).where(models.Task))
+    result = await db.execute(
+        select(models.Task).where(
+            models.Task.id == task_id, models.Task.user_id == current_user.id
+        )
+    )
+    task = result.scalar_one_or_none()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    task.start_time = datetime.utcnow()
+
+    db.add(task)
+    await db.commit()
+    await db.refresh(task)
+    return task
+
+
+@router.patch("/tasks/{task_id}/end", response_model=schemas.TaskOut)
+async def end_task(
+    task_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    task = await db.get(models.Task, task_id)
+    if not task or task.user_id != user.id:
+        raise HTTPException(status_code=404, detail="Task not found")
+    task.end_time = datetime.utcnow()
+    await db.commit()
+    await db.refresh(task)
+    return task
+
+
+class PauseReason(BaseModel):
+    reason: str
+
+
+@router.patch("/tasks/{task_id}/pause", response_model=schemas.TaskOut)
+async def pause_task(
+    task_id: int,
+    reason: PauseReason,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    task = await db.get(models.Task, task_id)
+    if not task or task.user_id != user.id:
+        raise HTTPException(status_code=404, detail="Task not found")
+    task.paused_at = datetime.utcnow()
+    task.pause_reason = reason.reason
+    await db.commit()
+    await db.refresh(task)
+    return task
+
+
+@router.patch("/tasks/{task_id}/resume", response_model=schemas.TaskOut)
+async def resume_task(
+    task_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    task = await db.get(models.Task, task_id)
+    if not task or task.user_id != user.id:
+        raise HTTPException(status_code=404, detail="Task not found")
+    task.resumed_at = datetime.utcnow()
+    await db.commit()
+    await db.refresh(task)
+    return task

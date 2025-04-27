@@ -31,9 +31,41 @@ Future features may include:
 
 ## Getting started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+- Open terminal, change directory to projects/private/dewlist, code .
+- Open docker
+- In terminal:
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+docker compose down
+docker compose up
+
+- open FastAPI: 0.0.0.0:8000/docs
+
+- new terminal, change directory to frontend
+
+npm run dev
+
+- new terminal
+
+## Backend Log
+
+[Complete]
+{In Progress}
+
+- [Authorize] (uid:admin@admin.com) (pw: none)
+
+- [register]
+- [login]
+- [create_task]
+- [get_tasks]
+- [update_tasks]
+- [delete_tasks]
+- [toggle_complete]
+- [Start_Task]
+
+## Frontend Log
+
+[Complete]
+{In Progress}
 
 ## Add your files
 
