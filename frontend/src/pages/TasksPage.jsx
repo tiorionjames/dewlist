@@ -208,7 +208,6 @@ export default function TasksPage() {
       {user?.role === 'admin' && (
         <div className="mb-4 p-2 bg-yellow-100 rounded text-center">
           <p className="font-bold text-yellow-800">You are an Admin!</p>
-          <Link to="/admin" className="underline text-blue-600">Go to Admin Dashboard</Link>
         </div>
       )}
 
