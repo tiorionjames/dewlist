@@ -1,6 +1,11 @@
+# /app/schemas.py
+
 from pydantic import BaseModel, EmailStr, ConfigDict
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
+
+# ─────────────────────────────────────────────────────────────────────────────
+# User schemas
 
 
 class UserCreate(BaseModel):
@@ -13,13 +18,20 @@ class UserOut(BaseModel):
     email: EmailStr
     role: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)  # UPDATED
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Auth schemas
 
 
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Task schemas
 
 
 class TaskBase(BaseModel):
@@ -38,16 +50,24 @@ class TaskOut(TaskBase):
     id: int
     user_id: int
     is_complete: bool
-    completed_at: Optional[datetime]
-    start_time: Optional[datetime]
-    end_time: Optional[datetime]
-    paused_at: Optional[datetime]
-    pause_reason: Optional[str]
-    resumed_at: Optional[datetime]
+    completed_at: Optional[datetime] = None
+    start_time: Optional[datetime] = None
+    end_time: Optional[datetime] = None
+    paused_at: Optional[datetime] = None
+    pause_reason: Optional[str] = None
+    resumed_at: Optional[datetime] = None
     recurrence_label: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# ADDED for the “forgot password” flow
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
 class Message(BaseModel):
-    detail: str
+    message: str  # UPDATED to match the {"message": "..."} response

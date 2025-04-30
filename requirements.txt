@@ -1,4 +1,4 @@
-accelerate==1.6.0
+//accelerate==1.6.0
 aiofiles==24.1.0
 aiohappyeyeballs==2.6.1
 aiohttp==3.11.16
@@ -94,9 +94,9 @@ starlette==0.46.2
 sympy==1.13.3
 tokenizers==0.21.1
 tomlkit==0.13.2
-torch==2.2.2
-torchaudio==2.2.2
-torchvision==0.17.2
+//torch==2.2.2
+//torchaudio==2.2.2
+//torchvision==0.17.2
 tqdm==4.67.1
 transformers==4.51.2
 typer==0.15.2
@@ -110,3 +110,7 @@ watchfiles==1.0.5
 websockets==15.0.1
 xxhash==3.5.0
 yarl==1.19.0
+
+torch==2.2.2+cpu --extra-index-url https://download.pytorch.org/whl/cpu
+torchvision==0.17.2+cpu --extra-index-url https://download.pytorch.org/whl/cpu
+torchaudio==2.2.2 --extra-index-url https://download.pytorch.org/whl/cpu

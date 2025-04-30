@@ -17,6 +17,8 @@ from auth import (
     verify_reset_token,
 )
 from dependencies import RoleChecker
+from crud import get_user_by_email, create_password_reset_token, send_reset_email
+
 
 router = APIRouter()
 
@@ -88,10 +90,19 @@ async def login(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/users/me", response_model=schemas.UserOut)
-async def get_me(current_user: models.User = Depends(get_current_user)):
-
-    return current_user
+@router.post("/forgot-password", response_model=schemas.Message)
+async def forgot_password(
+    payload: schemas.ForgotPasswordRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    user = await get_user_by_email(db, payload.email)
+    if not user:
+        # you might deliberately not leak existence info here,
+        # but at least choose 200 vs 404 consistently
+        raise HTTPException(status_code=404, detail="User not found")
+    token = await create_password_reset_token(db, user.id)
+    await send_reset_email(user.email, token)
+    return {"message": "If that email exists, a reset link has been sent."}
 
 
 # =========================

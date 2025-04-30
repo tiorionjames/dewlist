@@ -1,3 +1,5 @@
+# /app/models.py
+
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
@@ -25,8 +27,13 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     role = Column(String(20), nullable=False, default="user")
+
+    # existing relationships
     tasks = relationship("Task", back_populates="owner")
     audit_logs = relationship("AuditLog", back_populates="user")
+
+    # ADDED: link to PasswordReset entries
+    password_resets = relationship("PasswordReset", back_populates="user")  # ADDED
 
 
 class Task(Base):
@@ -48,3 +55,18 @@ class Task(Base):
     resumed_at = Column(DateTime, nullable=True)
 
     owner = relationship("User", back_populates="tasks")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ADDED: table for password reset tokens
+class PasswordReset(Base):
+    __tablename__ = "password_resets"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    token = Column(String, unique=True, index=True, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    # back-reference to User
+    user = relationship("User", back_populates="password_resets")  # ADDED

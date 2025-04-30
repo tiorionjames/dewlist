@@ -8,6 +8,9 @@ from database import init_engine, get_engine
 from routes import router
 import models
 
+app = FastAPI()
+app.include_router(router)
+
 
 def create_app() -> FastAPI:
     app = FastAPI()
