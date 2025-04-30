@@ -111,6 +111,6 @@ websockets==15.0.1
 xxhash==3.5.0
 yarl==1.19.0
 
-torch==2.2.2 --extra-index-url https://download.pytorch.org/whl/cpu
-torchvision==0.17.2 --extra-index-url https://download.pytorch.org/whl/cpu
-torchaudio==2.2.2 --extra-index-url https://download.pytorch.org/whl/cpu
+#torch==2.2.2 --extra-index-url https://download.pytorch.org/whl/cpu
+#torchvision==0.17.2 --extra-index-url https://download.pytorch.org/whl/cpu
+#torchaudio==2.2.2 --extra-index-url https://download.pytorch.org/whl/cpu
