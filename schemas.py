@@ -16,9 +16,12 @@ class UserCreate(BaseModel):
 class UserOut(BaseModel):
     id: int
     email: EmailStr
+    is_active: bool
+    is_superuser: bool
     role: str
 
-    model_config = ConfigDict(from_attributes=True)  # UPDATED
+    # Enable ORM mode for SQLAlchemy models
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -58,11 +61,12 @@ class TaskOut(TaskBase):
     resumed_at: Optional[datetime] = None
     recurrence_label: Optional[str] = None
 
+    # Enable ORM mode for SQLAlchemy models
     model_config = ConfigDict(from_attributes=True)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ADDED for the “forgot password” flow
+# Forgot password flow
 
 
 class ForgotPasswordRequest(BaseModel):
@@ -70,4 +74,4 @@ class ForgotPasswordRequest(BaseModel):
 
 
 class Message(BaseModel):
-    message: str  # UPDATED to match the {"message": "..."} response
+    message: str  # for simple responses

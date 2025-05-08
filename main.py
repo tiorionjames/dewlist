@@ -1,86 +1,63 @@
+# main.py
+
 import os
 import asyncio
+import aiomysql
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.exc import OperationalError
 
 from database import init_engine, get_engine
+from models import Base
 from routes import router
-import models
 
 app = FastAPI()
+
+# Enable CORS for your React frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # or ["*"] while debugging
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+async def wait_for_mysql(
+    host: str,
+    port: int,
+    user: str,
+    password: str,
+    db: str,
+    retries: int = 20,
+    delay: float = 1.0,
+):
+    for attempt in range(retries):
+        try:
+            conn = await aiomysql.connect(
+                host=host, port=port, user=user, password=password, db=db
+            )
+            conn.close()
+            print("✅ MySQL is ready!")
+            return
+        except Exception:
+            await asyncio.sleep(delay)
+    raise RuntimeError("Could not connect to MySQL")
+
+
+@app.on_event("startup")
+async def on_startup():
+    init_engine(os.getenv("DATABASE_URL"))
+    await wait_for_mysql("db", 3306, "dewuser", "secret_pw", "dewlist")
+    engine = get_engine()
+    async with engine.begin() as conn:
+        # This only CREATEs missing tables—it won’t ALTER existing ones!
+        await conn.run_sync(Base.metadata.create_all)
+    print("✅ Tables created (if they weren’t already)")
+
+
 app.include_router(router)
 
 
-def create_app() -> FastAPI:
-    app = FastAPI()
-
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["http://localhost:3000"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-
-    @app.on_event("startup")
-    async def on_startup():
-        init_engine(os.getenv("DATABASE_URL"))
-        await initialize_database()
-
-    app.include_router(router)
-
-    @app.get("/")
-    def read_root():
-        return {"message": "Welcome to DewList!"}
-
-    return app
-
-
-async def wait_for_postgres():
-    import asyncpg
-
-    for i in range(20):
-        try:
-            conn = await asyncpg.connect(
-                user="postgres",
-                password="postgres",
-                database="dewlist",
-                host="db",
-                port=5432,
-            )
-            await conn.close()
-            print(f"✅ Postgres TCP connection successful at attempt {i+1}")
-            return
-        except (asyncpg.exceptions.CannotConnectNowError, ConnectionRefusedError) as e:
-            print(f"⏳ TCP connection not ready, retry {i+1}/20… ({e})")
-            await asyncio.sleep(2)
-    raise RuntimeError(
-        "🚨 Could not establish TCP connection to Postgres after 20 attempts."
-    )
-
-
-async def initialize_database():
-    await wait_for_postgres()
-
-    print("😴 Sleeping for 5 seconds to let Postgres fully wake up...")
-    await asyncio.sleep(5)
-
-    engine = get_engine()
-    if engine is None:
-        raise RuntimeError("🚨 Engine is still None when trying to create tables!")
-
-    for i in range(20):
-        try:
-            print(f"🔨 Trying to create database schema (attempt {i+1})...")
-            async with engine.begin() as conn:
-                await conn.run_sync(models.Base.metadata.create_all)
-            print(f"✅ Database schema created successfully at attempt {i+1}")
-            return
-        except OperationalError as e:
-            print(f"⏳ Database schema not ready, retry {i+1}/20… ({e})")
-            await asyncio.sleep(2)
-    raise RuntimeError("🚨 Could not initialize database schema after 20 attempts.")
-
-
-app = create_app()
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to DewList!"}

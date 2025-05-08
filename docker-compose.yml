@@ -1,38 +1,30 @@
+version: "3.8"
 services:
-  dewlist:
-    build: .
-    container_name: dewlist-app
+  db:
+    image: mysql:8
+    container_name: dewlist-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: secret_root_pw
+      MYSQL_DATABASE: dewlist
+      MYSQL_USER: dewuser
+      MYSQL_PASSWORD: secret_pw
     ports:
-      - "8000:8000"
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  web:
+    build: .
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 8000
     volumes:
       - .:/app
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/dewlist
-      - SECRET_KEY=your_super_secret_key_here
-      - ALGORITHM=HS256
-      - ACCESS_TOKEN_EXPIRE_MINUTES=30
-    command: "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
-
-  db:
-    image: postgres:15
-    container_name: dewlist-db
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: dewlist
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
 
 volumes:
-  postgres_data:
+  db_data:

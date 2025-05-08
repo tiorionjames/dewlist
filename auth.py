@@ -1,13 +1,16 @@
+# auth.py
+
 import os
 from datetime import datetime, timedelta
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from typing import AsyncGenerator, Optional
-from database import get_db
 from jose import jwt, JWTError
+
+from database import get_db
 import models
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
@@ -37,7 +40,8 @@ def create_access_token(
 
 
 async def get_current_user(
-    token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
+    token: str = Depends(oauth2_scheme),
+    db: AsyncSession = Depends(get_db),
 ):
     creds_exc = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -51,24 +55,9 @@ async def get_current_user(
             raise creds_exc
     except JWTError:
         raise creds_exc
+
     result = await db.execute(select(models.User).where(models.User.id == int(user_id)))
     user = result.scalar_one_or_none()
     if user is None:
         raise creds_exc
     return user
-
-
-def create_reset_token(
-    data: dict, expires_delta: timedelta = timedelta(hours=1)
-) -> str:
-    to_encode = data.copy()
-    expire = datetime.utcnow() + expires_delta
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
-
-def verify_reset_token(token: str) -> dict:
-    try:
-        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    except JWTError:
-        raise HTTPException(status_code=400, detail="Invalid token")

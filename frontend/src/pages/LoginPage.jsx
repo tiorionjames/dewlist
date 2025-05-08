@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setToken } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
@@ -20,7 +20,7 @@ export default function LoginPage() {
       return;
     }
     const data = await res.json();
-    setToken(data.access_token);
+    login(data.access_token);  // call login(), not setToken
     navigate('/');
   }
 

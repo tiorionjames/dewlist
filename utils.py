@@ -33,12 +33,12 @@ async def log_audit_action(
     action: str,
     target: str = "",
     db: AsyncSession = Depends(get_db),
-):
+) -> None:
     """
-    Record an audit log entry.
+    Record an audit log entry for the given user ID and action.
     """
-    log = AuditLog(user_id=user_id, action=action, target=target)
-    db.add(log)
+    entry = AuditLog(user_id=user_id, action=action, target=target)
+    db.add(entry)
     await db.commit()
 
 
@@ -47,9 +47,7 @@ async def log_audit_action(
 
 
 def strip_timezone(dt: datetime) -> datetime:
-    """
-    Remove tzinfo from a datetime, if present.
-    """
+    """Remove tzinfo from a datetime, if present."""
     if dt is not None and dt.tzinfo is not None:
         return dt.replace(tzinfo=None)
     return dt

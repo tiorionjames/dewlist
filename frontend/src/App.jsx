@@ -7,11 +7,11 @@ import ProtectedRoute from './components/ProtectedRoute';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import TasksPage from './pages/TasksPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import TasksPage from './pages/TasksPage';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminLogsPage from './pages/AdminLogsPage';
-
+import ManagerDashboard from './pages/ManagerDashboard';
 
 export default function App() {
   return (
@@ -19,13 +19,49 @@ export default function App() {
       <BrowserRouter>
         <Header />
         <Routes>
-          <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-          <Route path="/admin/logs" element={<ProtectedRoute><AdminLogsPage /></ProtectedRoute>} />
+          {/* Public routes */}
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/" element={<ProtectedRoute><TasksPage /></ProtectedRoute>} />
+
+          {/* Protected user routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <TasksPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin-only routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/logs"
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminLogsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Manager-only route */}
+          <Route
+            path="/manager/dashboard"
+            element={
+              <ProtectedRoute>
+                <ManagerDashboard />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

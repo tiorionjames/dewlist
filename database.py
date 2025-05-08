@@ -3,11 +3,15 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
 
-DATABASE_URL = "postgresql+asyncpg://<user>:<pass>@localhost/<dbname>"
+DATABASE_URL = "mysql+aiomysql://dewuser:secret_pw@db:3306/dewlist"
 
 
-engine: Optional[AsyncSession] = None
-AsyncSessionLocal: Optional[sessionmaker] = None
+engine = create_async_engine(
+    DATABASE_URL,
+    echo=True,
+    pool_pre_ping=True,
+)
+SessionLocal = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 
 def get_engine():
@@ -24,6 +28,9 @@ def init_engine(database_url: str):
     print(f"✅ Engine and SessionLocal created!")
 
 
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    async with AsyncSessionLocal() as session:
+SessionLocal = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+
+
+async def get_db() -> AsyncSession:
+    async with SessionLocal() as session:
         yield session

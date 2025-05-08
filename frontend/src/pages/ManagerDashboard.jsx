@@ -1,7 +1,7 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
-export default function AdminDashboard() {
+export default function ManagerDashboard() {
   const navigate = useNavigate();
 
   return (
@@ -9,11 +9,7 @@ export default function AdminDashboard() {
       <h1 className="text-2xl font-semibold mb-4">Admin Dashboard</h1>
       <nav className="mb-6">
         <ul className="space-y-2">
-          <li>
-            <Link to="/admin/logs" className="text-blue-600 hover:underline">
-              View Audit Logs
-            </Link>
-          </li>
+
           {/* Future links to /admin/users, /admin/settings, etc */}
         </ul>
       </nav>
