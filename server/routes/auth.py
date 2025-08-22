@@ -1,3 +1,4 @@
+# /server/routes/auth.py
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext

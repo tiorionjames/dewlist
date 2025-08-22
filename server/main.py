@@ -1,3 +1,4 @@
+# server/main.py
 from fastapi import FastAPI
 from server.routes import auth, users, tasks, managers, admin
 

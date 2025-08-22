@@ -1,3 +1,4 @@
+-- server/seed.sql
 DROP TABLE IF EXISTS role_permissions CASCADE;
 DROP TABLE IF EXISTS permissions CASCADE;
 DROP TABLE IF EXISTS roles CASCADE;
