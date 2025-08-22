@@ -18,7 +18,7 @@ def list_tasks(db: Session = Depends(get_db)):
 
 
 # Start task
-@router.post("/{task_id}/start")
+@router.post("/{task_id}/start", response_model=TaskOut)
 def start_task(task_id: int, user_id: int, db: Session = Depends(get_db)):
     task = get_task(db, task_id)
     if task.assigned_to != user_id:
@@ -31,7 +31,7 @@ def start_task(task_id: int, user_id: int, db: Session = Depends(get_db)):
 
 
 # Pause task
-@router.post("/{task_id}/pause")
+@router.post("/{task_id}/pause", response_model=TaskOut)
 def pause_task(task_id: int, user_id: int, db: Session = Depends(get_db)):
     task = get_task(db, task_id)
     if task.assigned_to != user_id:
@@ -42,7 +42,7 @@ def pause_task(task_id: int, user_id: int, db: Session = Depends(get_db)):
 
 
 # Resume task
-@router.post("/{task_id}/resume")
+@router.post("/{task_id}/resume", response_model=TaskOut)
 def resume_task(task_id: int, user_id: int, db: Session = Depends(get_db)):
     task = get_task(db, task_id)
     if task.assigned_to != user_id:
